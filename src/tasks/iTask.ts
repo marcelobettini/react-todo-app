@@ -1,5 +1,5 @@
 export interface iTask {
-  id: number;
+  id: string;
   description: string;
   isCompleted: boolean;
 }

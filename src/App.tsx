@@ -1,26 +1,40 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocalStorage } from "./hooks/useLocalStorage";
 import Input from "./components/Input";
 import Search from "./components/Search";
 import { iTask } from "./tasks/iTask";
 import TasksList from "./components/TasksList";
+
 function App() {
-  const [tasks, setTasks] = useState<iTask[]>([]);
+  const [tasks, setTasks] = useLocalStorage("tasks");
   const [filteredTasks, setFilteredTasks] = useState<iTask[]>([]);
+  const [searchQuery, setSearchQuery] = useState<string>("");
+
+  useEffect(() => {
+    setFilteredTasks(tasks);
+  }, [tasks]);
+
   const handleAddTask = (description: string) => {
-    const id: number = !tasks?.length ? 1 : tasks[tasks.length - 1].id + 1;
+    const id: string = self.crypto.randomUUID();
     const newTask: iTask = {
       id,
       description,
       isCompleted: false,
     };
     setTasks([...tasks, newTask]);
-    setFilteredTasks([...tasks, newTask]);
+    setFilteredTasks([...filteredTasks, newTask]);
   };
 
-  const handleDeleteTask = (id: number) => {
+  const handleDeleteTask = (id: string) => {
     const remainingTasks = tasks.filter(t => t.id !== id);
     setTasks([...remainingTasks]);
-    setFilteredTasks({ ...remainingTasks });
+    setFilteredTasks(
+      [...remainingTasks].filter(t =>
+        t.description
+          .toLocaleLowerCase()
+          .includes(searchQuery.toLocaleLowerCase())
+      )
+    );
   };
 
   const handleSearch = (query: string) => {
@@ -28,7 +42,9 @@ function App() {
       t.description.toLocaleLowerCase().includes(query.toLocaleLowerCase())
     );
     setFilteredTasks(filteredTasks);
+    setSearchQuery(query);
   };
+
   return (
     <main className="container">
       <Search onSearch={query => handleSearch(query)} />

@@ -2,7 +2,7 @@ import { iTask } from "../tasks/iTask";
 import { RiDeleteBin6Line } from "react-icons/ri";
 interface TaskListProps {
   tasks: iTask[] | undefined;
-  onDelete: (id: number) => void;
+  onDelete: (id: string) => void;
 }
 function TasksList({ tasks, onDelete }: TaskListProps) {
   return (
